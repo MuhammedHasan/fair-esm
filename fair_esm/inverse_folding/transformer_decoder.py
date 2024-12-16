@@ -12,7 +12,7 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from esm.modules import SinusoidalPositionalEmbedding
+from fair_esm.modules import SinusoidalPositionalEmbedding
 from .transformer_layer import TransformerDecoderLayer
 
 

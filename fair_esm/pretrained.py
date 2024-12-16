@@ -11,8 +11,8 @@ from pathlib import Path
 
 import torch
 
-import esm
-from esm.model.esm2 import ESM2
+import fair_esm
+from fair_esm.model.esm2 import ESM2
 
 
 def _has_regression_weights(model_name):
@@ -83,9 +83,9 @@ def has_emb_layer_norm_before(model_state):
 
 
 def _load_model_and_alphabet_core_v1(model_data):
-    import esm  # since esm.inverse_folding is imported below, you actually have to re-import esm here
+    import fair_esm  # since esm.inverse_folding is imported below, you actually have to re-import esm here
 
-    alphabet = esm.Alphabet.from_architecture(model_data["args"].arch)
+    alphabet = fair_esm.Alphabet.from_architecture(model_data["args"].arch)
 
     if model_data["args"].arch == "roberta_large":
         # upgrade state dict
@@ -98,7 +98,7 @@ def _load_model_and_alphabet_core_v1(model_data):
         model_state = {prs1(prs2(arg[0])): arg[1] for arg in model_data["model"].items()}
         model_state["embed_tokens.weight"][alphabet.mask_idx].zero_()  # For token drop
         model_args["emb_layer_norm_before"] = has_emb_layer_norm_before(model_state)
-        model_type = esm.ProteinBertModel
+        model_type = fair_esm.ProteinBertModel
 
     elif model_data["args"].arch == "protein_bert_base":
 
@@ -107,7 +107,7 @@ def _load_model_and_alphabet_core_v1(model_data):
         prs = lambda s: "".join(s.split("decoder.")[1:] if "decoder" in s else s)
         model_args = {pra(arg[0]): arg[1] for arg in vars(model_data["args"]).items()}
         model_state = {prs(arg[0]): arg[1] for arg in model_data["model"].items()}
-        model_type = esm.ProteinBertModel
+        model_type = fair_esm.ProteinBertModel
     elif model_data["args"].arch == "msa_transformer":
 
         # upgrade state dict
@@ -123,12 +123,12 @@ def _load_model_and_alphabet_core_v1(model_data):
             emb_dim = model_state["msa_position_embedding"].size(-1)
             model_args["embed_positions_msa_dim"] = emb_dim  # initial release, bug: emb_dim==1
 
-        model_type = esm.MSATransformer
+        model_type = fair_esm.MSATransformer
 
     elif "invariant_gvp" in model_data["args"].arch:
-        import esm.inverse_folding
+        import fair_esm.inverse_folding
 
-        model_type = esm.inverse_folding.gvp_transformer.GVPTransformerModel
+        model_type = fair_esm.inverse_folding.gvp_transformer.GVPTransformerModel
         model_args = vars(model_data["args"])  # convert Namespace -> dict
 
         def update_name(s):
@@ -172,7 +172,7 @@ def _load_model_and_alphabet_core_v2(model_data):
     cfg = model_data["cfg"]["model"]
     state_dict = model_data["model"]
     state_dict = upgrade_state_dict(state_dict)
-    alphabet = esm.data.Alphabet.from_architecture("ESM-1b")
+    alphabet = fair_esm.data.Alphabet.from_architecture("ESM-1b")
     model = ESM2(
         num_layers=cfg.encoder_layers,
         embed_dim=cfg.encoder_embed_dim,
@@ -404,8 +404,8 @@ def esmfold_v0():
     on all PDB chains until 2020-05, to ensure temporal holdout with CASP14
     and the CAMEO validation and test set reported there.
     """
-    import esm.esmfold.v1.pretrained
-    return esm.esmfold.v1.pretrained.esmfold_v0()
+    import fair_esm.esmfold.v1.pretrained
+    return fair_esm.esmfold.v1.pretrained.esmfold_v0()
 
 
 def esmfold_v1():
@@ -416,8 +416,8 @@ def esmfold_v1():
     protein language model to extract meaningful representations from the
     protein sequence.
     """
-    import esm.esmfold.v1.pretrained
-    return esm.esmfold.v1.pretrained.esmfold_v1()
+    import fair_esm.esmfold.v1.pretrained
+    return fair_esm.esmfold.v1.pretrained.esmfold_v1()
 
 def esmfold_structure_module_only_8M():
     """
@@ -427,8 +427,8 @@ def esmfold_structure_module_only_8M():
     when ablated for number of parameters in the language model.
     See table S1 in (Lin et al, 2022).
     """
-    import esm.esmfold.v1.pretrained
-    return esm.esmfold.v1.pretrained.esmfold_structure_module_only_8M()
+    import fair_esm.esmfold.v1.pretrained
+    return fair_esm.esmfold.v1.pretrained.esmfold_structure_module_only_8M()
 
 
 def esmfold_structure_module_only_8M_270K():
@@ -439,8 +439,8 @@ def esmfold_structure_module_only_8M_270K():
     when ablated for number of parameters in the language model.
     See table S1 in (Lin et al, 2022).
     """
-    import esm.esmfold.v1.pretrained
-    return esm.esmfold.v1.pretrained.esmfold_structure_module_only_8M_270K()
+    import fair_esm.esmfold.v1.pretrained
+    return fair_esm.esmfold.v1.pretrained.esmfold_structure_module_only_8M_270K()
 
 
 def esmfold_structure_module_only_35M():
@@ -451,8 +451,8 @@ def esmfold_structure_module_only_35M():
     when ablated for number of parameters in the language model.
     See table S1 in (Lin et al, 2022).
     """
-    import esm.esmfold.v1.pretrained
-    return esm.esmfold.v1.pretrained.esmfold_structure_module_only_35M()
+    import fair_esm.esmfold.v1.pretrained
+    return fair_esm.esmfold.v1.pretrained.esmfold_structure_module_only_35M()
 
 
 def esmfold_structure_module_only_35M_270K():
@@ -463,8 +463,8 @@ def esmfold_structure_module_only_35M_270K():
     when ablated for number of parameters in the language model.
     See table S1 in (Lin et al, 2022).
     """
-    import esm.esmfold.v1.pretrained
-    return esm.esmfold.v1.pretrained.esmfold_structure_module_only_35M_270K()
+    import fair_esm.esmfold.v1.pretrained
+    return fair_esm.esmfold.v1.pretrained.esmfold_structure_module_only_35M_270K()
 
 
 def esmfold_structure_module_only_150M():
@@ -475,8 +475,8 @@ def esmfold_structure_module_only_150M():
     when ablated for number of parameters in the language model.
     See table S1 in (Lin et al, 2022).
     """
-    import esm.esmfold.v1.pretrained
-    return esm.esmfold.v1.pretrained.esmfold_structure_module_only_150M()
+    import fair_esm.esmfold.v1.pretrained
+    return fair_esm.esmfold.v1.pretrained.esmfold_structure_module_only_150M()
 
 
 def esmfold_structure_module_only_150M_270K():
@@ -487,8 +487,8 @@ def esmfold_structure_module_only_150M_270K():
     when ablated for number of parameters in the language model.
     See table S1 in (Lin et al, 2022).
     """
-    import esm.esmfold.v1.pretrained
-    return esm.esmfold.v1.pretrained.esmfold_structure_module_only_150M_270K()
+    import fair_esm.esmfold.v1.pretrained
+    return fair_esm.esmfold.v1.pretrained.esmfold_structure_module_only_150M_270K()
 
 
 def esmfold_structure_module_only_650M():
@@ -499,8 +499,8 @@ def esmfold_structure_module_only_650M():
     when ablated for number of parameters in the language model.
     See table S1 in (Lin et al, 2022).
     """
-    import esm.esmfold.v1.pretrained
-    return esm.esmfold.v1.pretrained.esmfold_structure_module_only_650M()
+    import fair_esm.esmfold.v1.pretrained
+    return fair_esm.esmfold.v1.pretrained.esmfold_structure_module_only_650M()
 
 
 def esmfold_structure_module_only_650M_270K():
@@ -511,8 +511,8 @@ def esmfold_structure_module_only_650M_270K():
     when ablated for number of parameters in the language model.
     See table S1 in (Lin et al, 2022).
     """
-    import esm.esmfold.v1.pretrained
-    return esm.esmfold.v1.pretrained.esmfold_structure_module_only_650M_270K()
+    import fair_esm.esmfold.v1.pretrained
+    return fair_esm.esmfold.v1.pretrained.esmfold_structure_module_only_650M_270K()
 
 
 def esmfold_structure_module_only_3B():
@@ -523,8 +523,8 @@ def esmfold_structure_module_only_3B():
     when ablated for number of parameters in the language model.
     See table S1 in (Lin et al, 2022).
     """
-    import esm.esmfold.v1.pretrained
-    return esm.esmfold.v1.pretrained.esmfold_structure_module_only_3B()
+    import fair_esm.esmfold.v1.pretrained
+    return fair_esm.esmfold.v1.pretrained.esmfold_structure_module_only_3B()
 
 
 def esmfold_structure_module_only_3B_270K():
@@ -535,8 +535,8 @@ def esmfold_structure_module_only_3B_270K():
     when ablated for number of parameters in the language model.
     See table S1 in (Lin et al, 2022).
     """
-    import esm.esmfold.v1.pretrained
-    return esm.esmfold.v1.pretrained.esmfold_structure_module_only_3B_270K()
+    import fair_esm.esmfold.v1.pretrained
+    return fair_esm.esmfold.v1.pretrained.esmfold_structure_module_only_3B_270K()
 
 
 def esmfold_structure_module_only_15B():
@@ -548,5 +548,5 @@ def esmfold_structure_module_only_15B():
     when ablated for number of parameters in the language model.
     See table S1 in (Lin et al, 2022).
     """
-    import esm.esmfold.v1.pretrained
-    return esm.esmfold.v1.pretrained.esmfold_structure_module_only_15B()
+    import fair_esm.esmfold.v1.pretrained
+    return fair_esm.esmfold.v1.pretrained.esmfold_structure_module_only_15B()

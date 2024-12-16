@@ -46,27 +46,27 @@ def _test_esm1b_truncation(alphabet):
 
 
 def test_esm1b_alphabet():
-    import esm
+    import fair_esm
 
-    _, alphabet = esm.pretrained.esm1b_t33_650M_UR50S()
+    _, alphabet = fair_esm.pretrained.esm1b_t33_650M_UR50S()
     _test_esm1b(alphabet)
     _test_esm1b_truncation(alphabet)
 
 
 def test_esm1v_alphabet():
-    import esm
+    import fair_esm
 
-    _, alphabet = esm.pretrained.esm1v_t33_650M_UR90S_1()
+    _, alphabet = fair_esm.pretrained.esm1v_t33_650M_UR90S_1()
     _test_esm1b(alphabet)
     _test_esm1b_truncation(alphabet)
 
 
 def test_esm1_msa1b_alphabet():
     import torch
-    import esm
+    import fair_esm
 
     # Load ESM-1b model
-    _, alphabet = esm.pretrained.esm_msa1b_t12_100M_UR50S()
+    _, alphabet = fair_esm.pretrained.esm_msa1b_t12_100M_UR50S()
     batch_converter = alphabet.get_batch_converter()
 
     data = [

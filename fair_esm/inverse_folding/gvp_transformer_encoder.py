@@ -13,7 +13,7 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from esm.modules import SinusoidalPositionalEmbedding
+from fair_esm.modules import SinusoidalPositionalEmbedding
 from .features import GVPInputFeaturizer, DihedralFeatures
 from .gvp_encoder import GVPEncoder
 from .transformer_layer import TransformerEncoderLayer

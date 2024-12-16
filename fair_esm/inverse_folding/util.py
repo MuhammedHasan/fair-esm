@@ -21,7 +21,7 @@ import torch.nn.functional as F
 import torch.utils.data as data
 from typing import Sequence, Tuple, List
 
-from esm.data import BatchConverter
+from fair_esm.data import BatchConverter
 
 
 def load_structure(fpath, chain=None):
